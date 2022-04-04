@@ -1,11 +1,16 @@
 const express = require("express");
+const {json} = require("body-parser");
 require("dotenv").config({});
 
 const {db} = require("./config/db");
 const app = express();
 
+//midleware
+app.use(json());
+
 //routes
 app.use("/admin", require("./routes/admin"));
+app.use("/", require("./routes/route"));
 
 //handler error response
 app.use("*", (req, res, next) => {

@@ -1,9 +1,20 @@
 const {  DataTypes, Model } = require('sequelize');
 const {db} = require("./../config/db");
+const {hashing} = require("./../helpers/password");
 
 class User extends Model {
   static async getAll() {
     return this.findAll({});
+  }
+  static async signUp({
+    name, username, email, password
+  }){
+    try{
+      const hash = await hashing(password);
+      return await this.create({name, username, email, password: hash});
+    }catch(error){
+      throw Error(error);
+    }
   }
 }
 
@@ -14,14 +25,17 @@ User.init({
     autoIncrement: true,
     primaryKey: true
   },
-  name: {
+  username: {
     type: DataTypes.STRING,
     allowNull: false
   },
   email: {
     type: DataTypes.STRING,
     allowNull: false
-    // allowNull defaults to true
+  },
+  email_verified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   },
   password: {
     type: DataTypes.STRING,
