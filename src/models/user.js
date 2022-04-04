@@ -1,17 +1,33 @@
 const {  DataTypes, Model } = require('sequelize');
 const {db} = require("./../config/db");
+const {Op} = require("sequelize");
 const {hashing} = require("./../helpers/password");
-
 class User extends Model {
   static async getAll() {
-    return this.findAll({});
+    return this.findAll({
+      attributes:["id","email","username"],
+    });
+  }
+  static async userExist({email, username}){
+    return await this.findOne({
+        where:{
+            [Op.or]:[
+                {
+                    email,
+                },
+                {                        
+                    username,
+                }
+            ]
+        }
+    });
   }
   static async signUp({
-    name, username, email, password
+    username, email, password
   }){
     try{
       const hash = await hashing(password);
-      return await this.create({name, username, email, password: hash});
+      return await this.create({username, email, password: hash});
     }catch(error){
       throw Error(error);
     }
@@ -39,7 +55,7 @@ User.init({
   },
   password: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
     // allowNull defaults to true
   }
 }, {

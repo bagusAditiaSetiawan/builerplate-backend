@@ -1,12 +1,14 @@
 const express = require("express");
 const {json} = require("body-parser");
 require("dotenv").config({});
+const cookieParser = require("cookie-parser");
 
 const {db} = require("./config/db");
 const app = express();
 
 //midleware
 app.use(json());
+app.use(cookieParser());
 
 //routes
 app.use("/admin", require("./routes/admin"));
