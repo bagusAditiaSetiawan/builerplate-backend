@@ -1,5 +1,6 @@
 const {User} = require("./../models/user");
-const jwt = require("jsonwebtoken");
+const {generateToken} = require("./../helpers/jsonwebtoken");
+const { errorBuild } = require("../helpers/rebuild");
 
 const list = async(req, res) => {
     const find = await User.getAll();
@@ -15,10 +16,9 @@ const signup = async (req, res) => {
         const {username, email, password} = req.body;
         const userExist = await User.userExist({username, email})
         if(userExist){
+            const errors = errorBuild("Username and email already exist");
             return res.status(400).json({
-                errors:[{
-                    message: "Username and email already exist"
-                }],
+                errors,
                 message: "Username and email already exist"
             })
         }
@@ -26,9 +26,9 @@ const signup = async (req, res) => {
         const signUp = await User.signUp({
             username, email, password
         });
-        const token = jwt.sign({ id: signUp.id, email: signUp.email }, process.env.JWT_SECRET);
+        const tokenGenerate = await generateToken(signUp.id, signUp.email);
         return res
-            .cookie("jwt", token, {
+            .cookie("jwt", tokenGenerate, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             })
@@ -39,7 +39,6 @@ const signup = async (req, res) => {
 
         
     }catch(error){
-        console.log(error);
         res.status(500).json({
             errors: [],
             message: "Something error"
