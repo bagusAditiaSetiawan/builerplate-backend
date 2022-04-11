@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const generateToken = async (id, email) => {
-    return await jwt.sign({ id, email }, process.env.JWT_SECRET, {
+    return await jwt.sign({ id, email, iat:  Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365) }, process.env.JWT_SECRET, {
         expiresIn: 360,
     });
 }

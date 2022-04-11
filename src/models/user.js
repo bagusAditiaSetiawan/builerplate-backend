@@ -1,22 +1,28 @@
 const {  DataTypes, Model } = require('sequelize');
 const {db} = require("./../config/db");
 const {Op} = require("sequelize");
-const {hashing} = require("./../helpers/password");
+const {hashing, comparePassword} = require("./../helpers/password");
 class User extends Model {
-  static async getAll() {
+  static async getAll()
+  {
     return this.findAll({
       attributes:["id","email","username"],
     });
   }
-  static async userExist({email, username}){
+  static async userPasswordCompare(passwordSyncron, passwordHash)
+  { 
+    return await comparePassword(passwordSyncron, passwordHash);
+  }
+  static async userExist({email, username})
+  {
     return await this.findOne({
         where:{
             [Op.or]:[
                 {
-                    email,
+                    email: email ?? "",
                 },
                 {                        
-                    username,
+                    username: username ?? "",
                 }
             ]
         }
