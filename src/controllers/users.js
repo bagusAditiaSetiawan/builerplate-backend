@@ -2,6 +2,8 @@ const {User} = require("./../models/user");
 const {generateToken} = require("./../helpers/jsonwebtoken");
 const {errorBuild} = require("../helpers/rebuild");
 const {db} = require("./../config/db");
+const mailjet = require("./../helpers/mailjet");
+const {stringGenerate} = require("./../helpers/string");
 
 const list = async(req, res) => {
     const find = await User.getAll();
@@ -22,10 +24,19 @@ const signup = async (req, res) => {
             if(userExist){
                throw Error("Username and email already exist");
             }
+            const otp = stringGenerate(5);
             const signUp = await User.signUp({
-                username, email, password
+                username, email, password, otp
             });
             const tokenGenerate = await generateToken(signUp.id, signUp.email);
+
+            mailjet.sendMail({
+                email: signUp.email,
+                name: signUp.email.split("@")[0]
+            },{
+                subject: "Aktivasi email",
+                body: `Kode aktivasi anda adalah <br> <h2>${otp}</h2>`
+            });
             await t.commit();
             return res
                 .cookie("jwt", tokenGenerate, {

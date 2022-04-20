@@ -4,14 +4,14 @@ class Mailjet{
     constructor(){
         this.mailjet = nodeMailjet.connect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVET);
     }
-    sendMail(sender={name:"", email:""}, receive={name:"", email:""}, message={subject, body}){
+    static async sendMail(receive={name:"", email:""}, message={subject, body}){
         try{
             const request = await this.mailjet.post("send", {'version': 'v3.1'})
                 .request({
                     "Messages":[{
                         "From": {
-                            "Email": sender.email,
-                            "Name": sender.name
+                            "Email": process.env.MJ_SENDER_EMAIL,
+                            "Name": process.env.MJ_SENDER_NAME
                         },
                         "To": [{
                             "Email": receive.email,
@@ -30,6 +30,4 @@ class Mailjet{
     }
 }
 
-module.exports = {
-    Mailjet
-}
+module.exports = Mailjet;
