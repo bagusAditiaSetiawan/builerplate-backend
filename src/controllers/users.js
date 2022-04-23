@@ -43,7 +43,7 @@ const signup = async (req, res) => {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 })
-                .status(200)
+                .status(201)
                 .json({ data: {
                     username, email
                 }, message: "Successfully signup user" });

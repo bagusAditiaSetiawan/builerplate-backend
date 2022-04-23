@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+require("dotenv").config({});
 const {json} = require("body-parser");
 const app = express();
 
@@ -8,8 +9,8 @@ app.use(json());
 app.use(cookieParser());
 
 //routes
-app.use("/admin", require("./routes/admin"));
-app.use("/", require("./routes/route"));
+app.use("/api/admin", require("./routes/admin"));
+app.use("/api", require("./routes/route"));
 
 //handler error response
 app.use("*", (req, res, next) => {
